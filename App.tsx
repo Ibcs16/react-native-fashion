@@ -3,10 +3,12 @@ import * as React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { StatusBar } from 'react-native';
+import { ThemeProvider } from '@shopify/restyle';
 
 import OnBoarding from './src/pages/Authentication/OnBoarding';
 import LoadAssets from './src/components/LoadAssets';
 import Welcome from './src/pages/Authentication/Welcome';
+import theme from './src/components/Theme';
 
 const AuthenticationStack = createStackNavigator();
 
@@ -27,10 +29,12 @@ const fonts = {
 
 const App: React.FC = () => {
   return (
-    <LoadAssets {...{ fonts }}>
-      <StatusBar barStyle="light-content" />
-      <AuthenticationNavigator />
-    </LoadAssets>
+    <ThemeProvider theme={theme}>
+      <LoadAssets {...{ fonts }}>
+        <StatusBar barStyle="light-content" />
+        <AuthenticationNavigator />
+      </LoadAssets>
+    </ThemeProvider>
   );
 };
 

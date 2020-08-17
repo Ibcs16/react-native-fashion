@@ -1,6 +1,7 @@
 import React from 'react';
-import { StyleSheet, View, Text, Dimensions } from 'react-native';
+import { StyleSheet, View, Dimensions } from 'react-native';
 
+import { Text } from '../../../../components/Theme';
 import Button from '../../../../components/Button';
 
 interface SubslideProps {
@@ -18,18 +19,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   subtitle: {
-    fontSize: 24,
-    lineHeight: 30,
-    fontFamily: 'SFProText-Semibold',
-    color: '#0C0D34',
     textAlign: 'center',
   },
   description: {
-    fontSize: 16,
     marginTop: 12,
-    fontFamily: 'SFProText-Regular',
-    color: '#0c0D34',
-    lineHeight: 24,
+
     textAlign: 'center',
     marginBottom: 40,
   },
@@ -43,8 +37,12 @@ const Subslide: React.FC<SubslideProps> = ({
 }) => {
   return (
     <View style={styles.container}>
-      <Text style={styles.subtitle}>{subtitle}</Text>
-      <Text style={styles.description}>{description}</Text>
+      <Text variant="title2" style={styles.subtitle}>
+        {subtitle}
+      </Text>
+      <Text variant="body" style={styles.description}>
+        {description}
+      </Text>
       <Button
         label={last ? 'Lets get started' : 'Next'}
         variant={last ? 'primary' : 'default'}
