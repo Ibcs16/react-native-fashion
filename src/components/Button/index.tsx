@@ -1,12 +1,12 @@
 import React, { useMemo } from 'react';
 import { RectButton } from 'react-native-gesture-handler';
-import { StyleSheet, Text } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { useTheme } from '@shopify/restyle';
 
-import { Theme } from '../Theme';
+import { Theme, Text } from '../Theme';
 
 interface ButtonProps {
-  variant: 'primary' | 'default';
+  variant: 'primary' | 'transparent' | 'default';
   label: string;
   onPress: () => void;
 }
@@ -20,25 +20,26 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  label: {
-    fontSize: 15,
-    fontFamily: 'SFProText-Regular',
-  },
 });
 
 const Button: React.FC<ButtonProps> = ({ variant, label, onPress }) => {
   const theme = useTheme<Theme>();
 
   const backgroundColor =
-    variant === 'primary' ? theme.colors.primary : theme.colors.body;
+    !variant || variant === 'default'
+      ? theme.colors.grey
+      : theme.colors[variant];
 
-  const color = variant === 'primary' ? theme.colors.white : theme.colors.title;
+  const color =
+    variant === 'primary' ? theme.colors.white : theme.colors.button;
   return (
     <RectButton
       {...{ onPress }}
       style={[styles.container, { backgroundColor }]}
     >
-      <Text style={[styles.label, { color }]}>{label}</Text>
+      <Text variant="button" style={{ color }}>
+        {label}
+      </Text>
     </RectButton>
   );
 };

@@ -4,14 +4,19 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { StatusBar } from 'react-native';
 import { ThemeProvider } from '@shopify/restyle';
+import { AppRoutes } from 'src/components/Navigation';
 
-import OnBoarding from './src/pages/Authentication/OnBoarding';
+import {
+  OnBoarding,
+  Welcome,
+  assets as authenticationAssets,
+} from './src/pages/Authentication';
 import LoadAssets from './src/components/LoadAssets';
-import Welcome from './src/pages/Authentication/Welcome';
 import theme from './src/components/Theme';
 
-const AuthenticationStack = createStackNavigator();
+const AuthenticationStack = createStackNavigator<AppRoutes>();
 
+const assets = [...authenticationAssets];
 const AuthenticationNavigator = () => {
   return (
     <AuthenticationStack.Navigator headerMode="none">
@@ -22,15 +27,16 @@ const AuthenticationNavigator = () => {
 };
 
 const fonts = {
-  'SFProText-Bold': require('./assets/fonts/SF-Pro-Text-Bold.otf'),
-  'SFProText-Semibold': require('./assets/fonts/SF-Pro-Text-Semibold.otf'),
-  'SFProText-Regular': require('./assets/fonts/SF-Pro-Text-Regular.otf'),
+  'SFProDisplay-Bold': require('./assets/fonts/SF-Pro-Display-Bold.otf'),
+  'SFProDisplay-Semibold': require('./assets/fonts/SF-Pro-Display-Semibold.otf'),
+  'SFProDisplay-Regular': require('./assets/fonts/SF-Pro-Display-Regular.otf'),
+  'SFProDisplay-Medium': require('./assets/fonts/SF-Pro-Display-Medium.otf'),
 };
 
 const App: React.FC = () => {
   return (
     <ThemeProvider theme={theme}>
-      <LoadAssets {...{ fonts }}>
+      <LoadAssets {...{ fonts, assets }}>
         <StatusBar barStyle="light-content" />
         <AuthenticationNavigator />
       </LoadAssets>

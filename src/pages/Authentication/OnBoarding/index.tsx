@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { View, StyleSheet, Dimensions } from 'react-native';
+import { View, StyleSheet, Dimensions, Image } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import {
   useValue,
@@ -7,11 +7,20 @@ import {
   interpolateColor,
   useScrollHandler,
 } from 'react-native-redash';
-import Animated, { multiply, divide } from 'react-native-reanimated';
+import Animated, {
+  multiply,
+  divide,
+  Extrapolate,
+  interpolate,
+} from 'react-native-reanimated';
 
-import Slide, { SLIDE_HEIGHT, BORDER_RADIUS } from './Slide';
+import theme from '../../../components/Theme';
+
+import Slide, { SLIDE_HEIGHT } from './Slide';
 import Subslide from './Subslide';
 import Dot from './Dot';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { AppRoutes, AuthNavigationProps } from 'src/components/Navigation';
 
 const { width } = Dimensions.get('window');
 
@@ -20,9 +29,16 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'white',
   },
+  underlay: {
+    ...StyleSheet.absoluteFillObject,
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    borderBottomRightRadius: theme.borderRadii.xl,
+    overflow: 'hidden',
+  },
   slider: {
     height: SLIDE_HEIGHT,
-    borderBottomEndRadius: BORDER_RADIUS,
+    borderBottomRightRadius: theme.borderRadii.xl,
   },
   footer: {
     flex: 1,
@@ -30,11 +46,11 @@ const styles = StyleSheet.create({
   footerContent: {
     flex: 1,
     backgroundColor: 'white',
-    borderTopLeftRadius: BORDER_RADIUS,
+    borderTopLeftRadius: theme.borderRadii.xl,
   },
   pagination: {
     ...StyleSheet.absoluteFillObject,
-    height: BORDER_RADIUS,
+    height: theme.borderRadii.xl,
     marginTop: -20,
     flexDirection: 'row',
     //backgroundColor: 'rgba(100,200,300,0.5)',
@@ -52,7 +68,7 @@ const slides = [
       "Can't find anything in your wardrobe. You are in the right place",
     color: '#BFEAF5',
     right: false,
-    picture: require('../assets/1.png'),
+    picture: { src: require('../assets/1.png'), width: 2513, height: 3583 },
   },
   {
     title: 'Playful',
@@ -60,7 +76,7 @@ const slides = [
     description: 'Explore hundreds of outfit ideas',
     color: '#BEECC4',
     right: true,
-    picture: require('../assets/2.png'),
+    picture: { src: require('../assets/2.png'), width: 2791, height: 3744 },
   },
   {
     title: 'Excentric',
@@ -69,7 +85,7 @@ const slides = [
       'Your individual and unique style will make you look amazing everyday',
     color: '#FFE409',
     right: false,
-    picture: require('../assets/3.png'),
+    picture: { src: require('../assets/3.png'), width: 2738, height: 3244 },
   },
   {
     title: 'Funky',
@@ -77,11 +93,15 @@ const slides = [
     description: 'Find your own personality and explore fashion',
     color: '#FFDDDD',
     right: true,
-    picture: require('../assets/4.png'),
+    picture: { src: require('../assets/4.png'), width: 2791, height: 3744 },
   },
 ];
 
-const OnBoarding: React.FC = () => {
+export const assets = slides.map(slide => slide.picture.src);
+
+type OnBoardingProps = AuthNavigationProps<'Onboarding'>;
+
+const OnBoarding: React.FC<OnBoardingProps> = ({ navigation }) => {
   const scroll = useRef<Animated.ScrollView>(null);
 
   // TODO: scrollHandler useScrollHandler
@@ -94,6 +114,30 @@ const OnBoarding: React.FC = () => {
   return (
     <View style={styles.container}>
       <Animated.View style={[styles.slider, { backgroundColor }]}>
+        {slides.map(({ picture }, index) => {
+          const opacity = interpolate(x, {
+            inputRange: [
+              (index - 0.7) * width,
+              index * width,
+              (index + 0.7) * width,
+            ],
+            outputRange: [0, 1, 0],
+            extrapolate: Extrapolate.CLAMP,
+          });
+          return (
+            <Animated.View style={[styles.underlay, { opacity }]} key={index}>
+              <Image
+                source={picture.src}
+                style={{
+                  width: width - theme.borderRadii.xl,
+                  height:
+                    ((width - theme.borderRadii.xl) * picture.height) /
+                    picture.width,
+                }}
+              />
+            </Animated.View>
+          );
+        })}
         <Animated.ScrollView
           ref={scroll}
           showsHorizontalScrollIndicator={false}
@@ -104,12 +148,7 @@ const OnBoarding: React.FC = () => {
           {...scrollHandler}
         >
           {slides.map((slide, i) => (
-            <Slide
-              key={i}
-              title={slide.title}
-              right={slide.right}
-              picture={slide.picture}
-            />
+            <Slide key={i} title={slide.title} right={slide.right} />
           ))}
         </Animated.ScrollView>
       </Animated.View>
@@ -132,20 +171,24 @@ const OnBoarding: React.FC = () => {
               transform: [{ translateX: multiply(x, -1) }],
             }}
           >
-            {slides.map(({ subtitle, description }, index) => (
-              <Subslide
-                key={index}
-                onPress={() => {
-                  if (scroll.current) {
-                    scroll.current
-                      .getNode()
-                      .scrollTo({ x: width * (index + 1), animated: true });
-                  }
-                }}
-                {...{ subtitle, description }}
-                last={index === slides.length - 1}
-              />
-            ))}
+            {slides.map(({ subtitle, description }, index) => {
+              const last = index === slides.length - 1;
+              return (
+                <Subslide
+                  key={index}
+                  onPress={() => {
+                    if (last) {
+                      navigation.navigate('Welcome');
+                    } else {
+                      scroll.current
+                        ?.getNode()
+                        .scrollTo({ x: width * (index + 1), animated: true });
+                    }
+                  }}
+                  {...{ subtitle, description, last }}
+                />
+              );
+            })}
           </Animated.View>
         </Animated.View>
       </View>
