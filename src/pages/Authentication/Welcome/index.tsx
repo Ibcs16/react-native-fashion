@@ -3,6 +3,7 @@ import { View, Image, Dimensions } from 'react-native';
 
 import theme, { Box, Text } from '../../../components/Theme';
 import Button from '../../../components/Button';
+import { AuthNavigationProps } from 'src/components/Navigation';
 
 const { width } = Dimensions.get('window');
 const picture = {
@@ -13,7 +14,9 @@ const picture = {
 
 export const assets = [picture.src];
 
-const Welcome: React.FC = () => {
+type WelcomeProps = AuthNavigationProps<'Welcome'>;
+
+const Welcome: React.FC<WelcomeProps> = ({ navigation }) => {
   return (
     <Box flex={1} backgroundColor="white">
       <Box
@@ -56,11 +59,15 @@ const Welcome: React.FC = () => {
             Login to your account below, or signup for an amazing experience
           </Text>
           <Button
-            onPress={() => {}}
+            onPress={() => navigation.navigate('Login')}
             variant="primary"
             label="Have an account? Login"
           />
-          <Button onPress={() => {}} label="Join us, it's Free" />
+          <Button
+            variant="transparent"
+            onPress={() => {}}
+            label="Join us, it's Free"
+          />
           <Button
             onPress={() => {}}
             variant="transparent"

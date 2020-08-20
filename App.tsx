@@ -5,6 +5,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { StatusBar } from 'react-native';
 import { ThemeProvider } from '@shopify/restyle';
 import { AppRoutes } from 'src/components/Navigation';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import {
   OnBoarding,
@@ -13,18 +14,9 @@ import {
 } from './src/pages/Authentication';
 import LoadAssets from './src/components/LoadAssets';
 import theme from './src/components/Theme';
-
-const AuthenticationStack = createStackNavigator<AppRoutes>();
+import AuthenticationNavigator from './src/components/AuthenticationNvaigator';
 
 const assets = [...authenticationAssets];
-const AuthenticationNavigator = () => {
-  return (
-    <AuthenticationStack.Navigator headerMode="none">
-      <AuthenticationStack.Screen name="OnBoarding" component={OnBoarding} />
-      <AuthenticationStack.Screen name="Welcome" component={Welcome} />
-    </AuthenticationStack.Navigator>
-  );
-};
 
 const fonts = {
   'SFProDisplay-Bold': require('./assets/fonts/SF-Pro-Display-Bold.otf'),
@@ -37,8 +29,9 @@ const App: React.FC = () => {
   return (
     <ThemeProvider theme={theme}>
       <LoadAssets {...{ fonts, assets }}>
-        <StatusBar barStyle="light-content" />
-        <AuthenticationNavigator />
+        <SafeAreaProvider>
+          <AuthenticationNavigator />
+        </SafeAreaProvider>
       </LoadAssets>
     </ThemeProvider>
   );
